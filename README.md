@@ -1,0 +1,99 @@
+PSAnonym
+=============
+
+SYNOPSIS
+-------
+PSAnonym is supplemental library for PowerShell.
+
+DESCRIPTION
+-------
+PSAnonym provides the feature that PowerShell doesn't have though another 
+programing language often has, the feature that improves usability of 
+existing features and so on.
+
+SUPPORTED FEATURES: LINQ(Language-Integrated Query)
+-------
+C# and Visual Basic provide LINQ that is powerful feature to manipulate 
+any collections implementing IEnumerable or IEnumerable<T>. 
+
+Of course PowerShell has the feature to manipulate a collection with 
+pipeline, but I seem that its usability is poorer than LINQ because the 
+following problems: 
+* Pipeline can't stop enumeration(it will be supported by v3)
+* Processing combination can't change easily
+
+For example, you had to be investigated whether PowerShell scripts have 
+copyright descriptions. The scope is very large. To get the outline first, 
+you decided to output the each top 10 lines from first 5 files to CSV.
+In default description, the solution will be as follows: 
+
+    PS C:\Users\User> Measure-Command {
+    >>     ls -r |
+    >>         ? {$_ -is [IO.FileInfo]} |
+    >>         ? {$_.Name -match '(.*ps1$)|(.*psm1$)|(.*psd1$)'} |
+    >>         select -f 5 |
+    >>         % {New-Object psobject |
+    >>             Add-Member NoteProperty File $_.FullName -p |
+    >>             Add-Member NoteProperty Head $($(gc $_.FullName -r 0 -t 10 `
+    >>                                         -en Unicode) -join "`r`n") -p} |
+    >>         epcsv 'result.csv' -not -en Default
+    >> }
+    >>
+    
+    
+    Days              : 0
+    Hours             : 0
+    Minutes           : 0
+    Seconds           : 13
+    Milliseconds      : 172
+    Ticks             : 131725673
+    TotalDays         : 0.000152460269675926
+    TotalHours        : 0.00365904647222222
+    TotalMinutes      : 0.219542788333333
+    TotalSeconds      : 13.1725673
+    TotalMilliseconds : 13172.5673
+    
+To compare results, Measure-Command is used to measure the time of commands.
+Against the same work, if you will use PSAnonym, the solution will be as 
+follows:
+
+    PS C:\Users\User> Measure-Command {
+    >>     {ls -r} |
+    >>         QWhere {$_ -is [IO.FileInfo]} |
+    >>         QWhere {$_.Name -match '(.*ps1$)|(.*psm1$)|(.*psd1$)'} |
+    >>         QTake 5 |
+    >>         QRun |
+    >>         % {New-Object psobject |
+    >>             Add-Member NoteProperty File $_.FullName -p |
+    >>             Add-Member NoteProperty Head $($(gc $_.FullName -r 0 -t 10 `
+    >>                                         -en Unicode) -join "`r`n") -p} |
+    >>         epcsv 'result.csv' -not -en Default
+    >> }
+    >>
+    
+    
+    Days              : 0
+    Hours             : 0
+    Minutes           : 0
+    Seconds           : 0
+    Milliseconds      : 104
+    Ticks             : 1046303
+    TotalDays         : 1.21099884259259E-06
+    TotalHours        : 2.90639722222222E-05
+    TotalMinutes      : 0.00174383833333333
+    TotalSeconds      : 0.1046303
+    TotalMilliseconds : 104.6303
+
+Compared with default case, it indicates that the result of PSAnonym is 100x 
+more faster.
+
+Actually, in the default case, if you change the value "select -f 5", the 
+time for work is not changed. Because the pipleline is due to enumerate a 
+collection to the end without reference to the value.
+
+If running the default script on v3, it will make the intended result.
+Unfortunately, the product that is released once in the world will not 
+disappear readily. PSAnonym will support you even if you had to work with 
+v2.    
+
+

@@ -1,3 +1,23 @@
+## 0.3.0.0 (2013/02/17)
+
+* Added the following EXPERIMENTAL features(called Prototype): 
+  - Add-AbstractMethod
+  - Add-AbstractProperty
+  - Add-Field
+  - Add-Method
+  - Add-OverrideMethod
+  - Add-OverrideProperty
+  - Add-Property
+  - New-Prototype
+  - Set-New
+  
+  About the usage, please see some integrated test cases that are defined in Prototype.psm1.Tests.ps1.
+
+>
+
+* In the feature PSUnitEx that improves the PSUnit usability, changed the interfaces. Because I understood wrongly about how to evaluate function parameters in PowerShell.
+
+
 ## 0.2.0.0 (2012/12/24)
 
 * Added the following features(corresponding to LINQ): 

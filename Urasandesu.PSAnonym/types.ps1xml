@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- 
+# 
+# File: types.ps1xml
+# 
+# Author: Akira Sugiura (urasandesu@gmail.com)
+# 
+# 
+# Copyright (c) 2012 Akira Sugiura
+#  
+#  This software is MIT License.
+#  
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#  
+#  The above copyright notice and this permission notice shall be included in
+#  all copies or substantial portions of the Software.
+#  
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+#  THE SOFTWARE.
+#
+-->
+<Types>
+    <Type>
+        <Name>System.Type</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>Default</Name>
+                <GetScriptBlock>
+                    $name = '__variable_{0}' -f ([Guid]::NewGuid().ToString() -split '-')[1]
+                    $value = [Urasandesu.NAnonym.Mixins.System.TypeMixin]::Default($this)
+                    $options = [Management.Automation.ScopedItemOptions]::None
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.PSVariableMixin]::New($name, $value, $options, $this)
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+    <Type>
+        <Name>System.Collections.Hashtable</Name>
+        <Members>
+            <ScriptMethod>
+                <Name>MutableForEach</Name>
+                <Script>
+                    param ([scriptblock]$action)
+                    
+                    $cache = @($null)
+                    $action_ = {
+                        param ($Me, $1)
+                        if ($null -eq $cache[0]) {
+                            $cache[0] = $action.GetNewClosure()
+                        }
+                        $cache[0].Invoke($Me, $1)
+                    }.GetNewClosure()
+                    
+                    [void][Urasandesu.NAnonym.Mixins.System.Linq.EnumerableMixin]::MutableForEach($this, $action_)
+                </Script>
+            </ScriptMethod>
+        </Members>
+    </Type>
+    <Type>
+        <Name>System.Management.Automation.PSCustomObject</Name>
+        <Members>
+            <ScriptMethod>
+                <Name>Clone</Name>
+                <Script>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.PSObjectMixin]::Clone($this)
+                </Script>
+            </ScriptMethod>
+            <ScriptProperty IsHidden="true">
+                <Name>psobjectex</Name>
+                <GetScriptBlock>
+                    if ($null -eq $this.m_psobjectex) {
+                        $m_psobjectex = New-Object Management.Automation.PSNoteProperty 'm_psobjectex', (New-Object Urasandesu.Pontine.Management.Automation.PSObjectProxy $this)
+                        $m_psobjectex.IsHidden = $true
+                        $this.psobject.Members.Add($m_psobjectex)
+                    }
+                    $this.m_psobjectex
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+    <Type>
+        <Name>System.Management.Automation.PSMemberInfo</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>IsHidden</Name>
+                <GetScriptBlock>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.PSMemberInfoMixin]::Get_isHidden($this)
+                </GetScriptBlock>
+                <SetScriptBlock>
+                    param ([bool]$value)
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.PSMemberInfoMixin]::Set_isHidden($this, $value)
+                </SetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>IsReserved</Name>
+                <GetScriptBlock>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.PSMemberInfoCollectionMixin]::IsReservedName(($this.Name -replace '^m_', '')) -or                    
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.PSMemberInfoCollectionMixin]::IsReservedName($this.Name)
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+    <Type>
+        <Name>System.Management.Automation.PSVariable</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>VariableType</Name>
+                <GetScriptBlock>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.PSVariableMixin]::GetVariableType($this)
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+    <Type>
+        <Name>System.Management.Automation.ScriptBlock</Name>
+        <Members>
+            <ScriptProperty>
+                <Name>SessionState</Name>
+                <GetScriptBlock>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::Get_SessionState($this)
+                </GetScriptBlock>
+                <SetScriptBlock>
+                    param ([System.Management.Automation.SessionState]$value)
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::Set_SessionState($this, $value)
+                </SetScriptBlock>
+            </ScriptProperty>
+            <ScriptMethod>
+                <Name>GetNewFastClosure</Name>
+                <Script>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::GetNewFastClosure($this, '1')
+                </Script>
+            </ScriptMethod>
+            <ScriptProperty>
+                <Name>RuntimeDefinedParameterList</Name>
+                <GetScriptBlock>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::Get_RuntimeDefinedParameterList($this)
+                </GetScriptBlock>
+            </ScriptProperty>
+            <ScriptProperty>
+                <Name>RuntimeDefinedParameters</Name>
+                <GetScriptBlock>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::Get_RuntimeDefinedParameters($this)
+                </GetScriptBlock>
+            </ScriptProperty>
+        </Members>
+    </Type>
+</Types>

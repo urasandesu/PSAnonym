@@ -1,3 +1,25 @@
+## 0.4.0.0 (2013/03/31)
+
+* Extended the LINQ features(corresponding to LINQ): 
+  - Join-Zipped(Zip)
+  - Skip-SequenceWhile(SkipWhile)
+  - Skip-Sequence(Skip)
+
+>
+
+* In the LINQ, change the process used default closure to the process used Fast Closure and its cache to improve performance. 
+* Reserved name for closure is changed $_ to $1, because $_ can not be overridden in some conditions. 
+* Fix some typo of help documents.
+* In all commands that return a scalar value, add the parameter to capture the variables in current scope.
+* In New-Range command, the parameter -Start/-Count became abbreviatable.
+* Until now, ConvertTo-Array command returned $null if an empty array is passed, but now it will return an empty array in that case. Because the previous behaviour was equivalent as Invoke-Linq command.
+
+>
+
+* In the Prototype, fix the bug that the type of super class is not able to get if it is multiple inheritance.
+* Fix the bug that a property expands the array that has one element to one value if it is at the first time.
+
+
 ## 0.3.0.0 (2013/02/17)
 
 * Added the following EXPERIMENTAL features(called Prototype): 
@@ -33,7 +55,7 @@
 
 >
 
-* Fis the issue: No values are returned if Find-CountOf is inserted in between the following commands: 
+* Fix the issue: No values are returned if Find-CountOf is inserted in between the following commands: 
   - Get-AllSatisfied(All)
   - Get-AnySatisfied(Any)
   - Group-SequenceBy(GroupBy)

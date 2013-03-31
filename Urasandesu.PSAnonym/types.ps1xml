@@ -50,18 +50,15 @@
             <ScriptMethod>
                 <Name>MutableForEach</Name>
                 <Script>
-                    param ([scriptblock]$action)
-                    
-                    $cache = @($null)
-                    $action_ = {
+                    param ([scriptblock]$Action)
+        
+                    $__cache__ = New-Object Urasandesu.Pontine.Management.Automation.FastClosureCache $Action, ([String[]]@('Me', '1'))
+                    $__action__ = {
                         param ($Me, $1)
-                        if ($null -eq $cache[0]) {
-                            $cache[0] = $action.GetNewClosure()
-                        }
-                        $cache[0].Invoke($Me, $1)
-                    }.GetNewClosure()
-                    
-                    [void][Urasandesu.NAnonym.Mixins.System.Linq.EnumerableMixin]::MutableForEach($this, $action_)
+                        $__cache__.GetNewOrUpdatedFastClosure().FastInvoke($Me, $1)
+                    }.GetNewFastClosure()
+        
+                    [void][Urasandesu.NAnonym.Mixins.System.Linq.EnumerableMixin]::MutableForEach($this, $__action__)
                 </Script>
             </ScriptMethod>
         </Members>
@@ -137,7 +134,19 @@
             <ScriptMethod>
                 <Name>GetNewFastClosure</Name>
                 <Script>
-                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::GetNewFastClosure($this, '1')
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::GetNewFastClosure($this, 1)
+                </Script>
+            </ScriptMethod>
+            <ScriptMethod>
+                <Name>FastInvoke</Name>
+                <Script>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::FastInvoke($this, $args)
+                </Script>
+            </ScriptMethod>
+            <ScriptMethod>
+                <Name>FastInvokeReturnAsIs</Name>
+                <Script>
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::FastInvokeReturnAsIs($this, $args)
                 </Script>
             </ScriptMethod>
             <ScriptProperty>
@@ -152,6 +161,25 @@
                     [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::Get_RuntimeDefinedParameters($this)
                 </GetScriptBlock>
             </ScriptProperty>
+            <ScriptMethod>
+                <Name>Clone</Name>
+                <Script>
+                    param ([bool]$cloneHelpInfo)
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.ScriptBlockMixin]::Clone($this, $cloneHelpInfo)
+                </Script>
+            </ScriptMethod>
+        </Members>
+    </Type>
+    <Type>
+        <Name>System.Management.Automation.Runspaces.Runspace</Name>
+        <Members>
+            <ScriptMethod>
+                <Name>CopyVariablesTo</Name>
+                <Script>
+                    param ([runspace]$runspace)
+                    [Urasandesu.Pontine.Mixins.System.Management.Automation.Runspaces.RunspaceMixin]::CopyVariablesTo($this, $runspace, @(1, ([int]::MaxValue)))
+                </Script>
+            </ScriptMethod>
         </Members>
     </Type>
 </Types>
